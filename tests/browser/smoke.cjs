@@ -10,7 +10,16 @@ const failures = [];
 const checks = [];
 async function record(label, action) { await action(); checks.push(label); console.log('PASS: ' + label); }
 async function noOverflow(page) {
-  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1), true, 'Page must not overflow viewport');
+  const metrics = await page.evaluate(() => ({
+    width: window.innerWidth,
+    scroll: document.documentElement.scrollWidth,
+    offenders: Array.from(document.querySelectorAll('main *')).map(el => ({ tag: el.tagName, cls: el.className?.toString(), right: Math.round(el.getBoundingClientRect().right), width: Math.round(el.getBoundingClientRect().width) })).filter(el => el.right > window.innerWidth + 2).slice(0, 12),
+  }));
+  if (metrics.scroll > metrics.width + 1) {
+    console.log('OVERFLOW:' + JSON.stringify({ url: page.url(), ...metrics }));
+    await capture(page, 'overflow-' + page.url().split('/').pop());
+    throw new Error('Page overflow at ' + page.url() + ': ' + JSON.stringify(metrics));
+  }
 }
 async function capture(page, name, fullPage = false) {
   const buffer = await page.screenshot({ path: path.join(output, name + '.jpg'), type: 'jpeg', quality: 55, fullPage });
