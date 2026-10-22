@@ -37,6 +37,46 @@ class AttendanceController extends Controller
         if (!$updated) return back()->withErrors(['attendance'=>'Check in first or already checked out.']);
         return back()->with('message','Checked out.');
     }
+
+    public function manualForm()
+    {
+        return view('attendance.manual',['employees'=>Employee::orderBy('name')->get()]);
+    }
+
+    public function manualStore(Request $r)
+    {
+        $v=$r->validate([
+            'employee_id'=>['required','exists:employees,id'],
+            'attendance_date'=>['required','date_format:Y-m-d','before_or_equal:today'],
+            'check_in_at'=>['required','date_format:H:i'],
+            'check_out_at'=>['nullable','date_format:H:i','after_or_equal:check_in_at'],
+            'reason'=>['required','string','min:5','max:1000'],
+        ]);
+        $date=Carbon::parse($v['attendance_date'],'Asia/Karachi');
+        if ($date->gt(now('Asia/Karachi')->startOfDay()) || !AttendanceRules::workingDay($date)) {
+            throw ValidationException::withMessages(['attendance_date'=>'Choose a current or past working day.']);
+        }
+        try {
+            DB::transaction(function() use($v) {
+                $after=[
+                    'employee_id'=>$v['employee_id'],
+                    'attendance_date'=>$v['attendance_date'],
+                    'check_in_at'=>$v['check_in_at'].':00',
+                    'check_out_at'=>empty($v['check_out_at'])?null:$v['check_out_at'].':00',
+                    'status'=>AttendanceRules::arrivalStatus($v['check_in_at']),
+                ];
+                $attendance=Attendance::create($after);
+                AttendanceCorrection::create([
+                    'attendance_id'=>$attendance->id,'admin_id'=>auth()->id(),
+                    'reason'=>$v['reason'],'before'=>['record'=>'missing'],'after'=>$after,
+                ]);
+            });
+        } catch (\Illuminate\Database\UniqueConstraintViolationException $e) {
+            throw ValidationException::withMessages(['attendance_date'=>'Attendance already exists; use Correct instead.']);
+        }
+        return redirect()->route('attendance.index',['date'=>$v['attendance_date']])->with('message','Missing record entered with correction history.');
+    }
+
     public function index(Request $r) {
         $v=$r->validate(['date'=>['nullable','date_format:Y-m-d'],'department_id'=>['nullable','exists:departments,id'],'employee_id'=>['nullable','exists:employees,id']]);
         $date=$v['date']??now('Asia/Karachi')->toDateString();
