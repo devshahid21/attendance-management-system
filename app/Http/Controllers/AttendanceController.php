@@ -80,7 +80,8 @@ class AttendanceController extends Controller
     public function index(Request $r) {
         $v=$r->validate(['date'=>['nullable','date_format:Y-m-d'],'department_id'=>['nullable','exists:departments,id'],'employee_id'=>['nullable','exists:employees,id']]);
         $date=$v['date']??now('Asia/Karachi')->toDateString();
-        $q=Employee::with(['department','attendances'=>fn($q)=>$q->whereDate('attendance_date',$date)])
+        $q=Employee::with(['department','attendances'=>fn($q)=>$q->whereDate('attendance_date',$date),
+            'leaveRequests'=>fn($q)=>$q->approved()->overlapping($date,$date)])
             ->when(isset($v['department_id']),fn($q)=>$q->where('department_id',$v['department_id']))
             ->when(isset($v['employee_id']),fn($q)=>$q->whereKey($v['employee_id']));
         return view('attendance.index',['items'=>$q->orderBy('name')->paginate(15)->withQueryString(),
@@ -91,8 +92,8 @@ class AttendanceController extends Controller
     }
     public function update(Request $r, Attendance $attendance) {
         $v=$r->validate([
-            'check_in_at'=>['nullable','date_format:H:i'],
-            'check_out_at'=>['nullable','date_format:H:i','required_with:check_in_at','after_or_equal:check_in_at'],
+            'check_in_at'=>['required','date_format:H:i'],
+            'check_out_at'=>['nullable','date_format:H:i','after_or_equal:check_in_at'],
             'reason'=>['required','string','min:5','max:1000'],
         ]);
         if (!empty($v['check_out_at']) && empty($v['check_in_at']))
@@ -118,11 +119,12 @@ class AttendanceController extends Controller
         $end=$start->copy()->endOfMonth();
         $records=$employee->attendances()->whereBetween('attendance_date',[$start->toDateString(),$end->toDateString()])
             ->get()->keyBy(fn($x)=>$x->attendance_date->toDateString());
+        $leaves=$employee->leaveRequests()->approved()->overlapping($start->toDateString(),$end->toDateString())->get();
         $days=[];
         for($d=$start->copy();$d->lte($end);$d->addDay()){
             $record=$records->get($d->toDateString());
             $days[]=['date'=>$d->toDateString(),'record'=>$record,
-                'label'=>AttendanceRules::label($d,$record,$employee->active)];
+                'label'=>AttendanceRules::label($d,$record,$employee->active,$leaves->contains(fn($leave)=>$leave->coversDate($d)))];
         }
         return view('attendance.mine',compact('employee','month','days'));
     }

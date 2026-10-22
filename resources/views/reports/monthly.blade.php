@@ -8,7 +8,7 @@
 <div class="col-md-4"><select aria-label="Employee" class="form-select" name="employee_id"><option value="">All employees</option>@foreach($employees as $e)<option value="{{ $e->id }}" @selected(request('employee_id')==$e->id)>{{ $e->name }}</option>@endforeach</select></div>
 <div class="col-md-2"><button class="btn btn-primary w-100">Filter</button></div></form>
 <a class="btn btn-outline-success mb-3" href="{{ route('reports.csv',request()->query()) }}">Export CSV</a>
-<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Code</th><th>Employee</th><th>Department</th><th>Present</th><th>Late</th><th>Absent</th></tr></thead><tbody>
-@forelse($rows as $row)<tr><td>{{ $row['employee']->employee_code }}</td><td>{{ $row['employee']->name }}</td><td>{{ $row['employee']->department->name }}</td><td>{{ $row['present'] }}</td><td>{{ $row['late'] }}</td><td>{{ $row['absent'] }}</td></tr>
-@empty<tr><td colspan="6">No employees.</td></tr>@endforelse</tbody></table></div>
+<div class="table-responsive"><table class="table table-striped"><thead><tr><th>Code</th><th>Employee</th><th>Department</th><th>Present</th><th>Late</th><th>Absent</th><th>Leave</th></tr></thead><tbody>
+@forelse($rows as $row)<tr><td>{{ $row['employee']->employee_code }}</td><td>{{ $row['employee']->name }}</td><td>{{ $row['employee']->department->name }}</td><td>{{ $row['present'] }}</td><td>{{ $row['late'] }}</td><td>{{ $row['absent'] }}</td><td>{{ $row['leave'] }}</td></tr>
+@empty<tr><td colspan="7">No employees.</td></tr>@endforelse</tbody></table></div>
 @endsection

@@ -6,6 +6,8 @@ erDiagram
     DEPARTMENTS ||--o{ EMPLOYEES : "contains"
     EMPLOYEES ||--o{ ATTENDANCES : "has"
     ATTENDANCES ||--o{ ATTENDANCE_CORRECTIONS : "has revisions"
+    EMPLOYEES ||--o{ LEAVE_REQUESTS : "requests"
+    USERS ||--o{ LEAVE_REQUESTS : "reviews"
     USERS ||--o{ ATTENDANCE_CORRECTIONS : "admin performs"
     USERS {
         bigint id PK
@@ -32,6 +34,18 @@ erDiagram
         time check_in_at
         time check_out_at
         enum status
+    }
+    LEAVE_REQUESTS {
+        bigint id PK
+        bigint employee_id FK
+        string type
+        date start_date
+        date end_date
+        text reason
+        string status
+        bigint reviewed_by FK
+        text review_note
+        datetime reviewed_at
     }
     ATTENDANCE_CORRECTIONS {
         bigint id PK

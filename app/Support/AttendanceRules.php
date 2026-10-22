@@ -10,11 +10,12 @@ class AttendanceRules
     {
         return in_array($date->dayOfWeekIso, config('attendance.working_days'), true);
     }
-    public static function label(Carbon $date, ?Attendance $attendance, bool $active = true): string
+    public static function label(Carbon $date, ?Attendance $attendance, bool $active = true, bool $approvedLeave = false): string
     {
         if (!self::workingDay($date)) return 'Non-working';
         if ($date->isAfter(now('Asia/Karachi')->startOfDay())) return 'Future';
         if ($attendance) return ucfirst($attendance->status);
+        if ($approvedLeave) return 'Leave';
         if ($date->isSameDay(now('Asia/Karachi'))) return 'Pending';
         return $active ? 'Absent' : 'Inactive';
     }
