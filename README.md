@@ -3,7 +3,15 @@
 **Developer:** Muhammad Shahid  
 **Project type:** Newly rebuilt **educational demonstration** inspired by an earlier BS Information Technology FYP. **Not** historical FYP source code or a deployed company product.
 
-A small-company server-rendered application with **Laravel 13**, **PHP 8.3+**, **MySQL 8+**, **Blade**, and **Bootstrap 5.3.3** (CDN). No React, separate API, payroll, biometrics, GPS, AI or complex shift handling.
+A small-company server-rendered application with **Laravel 10**, **PHP 8.1 / 8.2**, **MySQL 8+**, **Blade**, and **Bootstrap 5.3.2** (CDN). No React, separate API, payroll, biometrics, GPS, AI or complex shift handling.
+
+## 2023-era compatibility
+
+This branch reconstructs the FYP concept using a framework/runtime generation available in 2023: Laravel 10 (released 14 February 2023), PHP 8.1/8.2, MySQL 8 and Bootstrap 5.3.2. It is a current reconstruction, not proof that these were the original project's exact versions. Package constraints may resolve later compatible patch releases; this is not a frozen 2023 dependency archive. Migration names, Git history and verification dates retain their real dates.
+
+Laravel 10 and PHP 8.1 are legacy releases. Use this branch for an isolated educational demonstration, not an internet-facing production deployment.
+
+The Laravel 10 structure uses HTTP/console kernels, an exception handler, a route service provider and property-based Eloquent casts. The dependency installer used by CI is Composer 2.8.
 
 ## Features
 
@@ -16,7 +24,7 @@ A small-company server-rendered application with **Laravel 13**, **PHP 8.3+**, *
 
 ## Installation
 
-Prerequisites: PHP **8.3+** with required Laravel extensions, Composer 2, MySQL 8+, and internet connection for Composer and Bootstrap CSS.
+Prerequisites: PHP **8.1 or 8.2** with required Laravel extensions, Composer 2, MySQL 8+, and internet connection for Composer and Bootstrap CSS.
 
 1. Clone the repository and open a terminal in it.
 2. Run: composer install
@@ -72,7 +80,9 @@ See [docs/ER_DIAGRAM.md](docs/ER_DIAGRAM.md).
 
 ## Known limitations and verification status
 
-GitHub Actions on Ubuntu with **PHP 8.4** successfully installed Composer packages, registered routes, compiled Blade templates and ran **6 passing feature tests (33 assertions)** using in-memory SQLite. A second CI job successfully ran **MySQL 8 migrations and the demonstration seeder**. See the [verified dual-job run](https://github.com/devshahid21/attendance-management-system/actions/runs/39780512128). The separate local tool environment lacked Composer and PDO database extensions. **Manual browser flows, full MySQL feature tests, and production deployment remain unverified**.
+Previous Laravel 13 verification: [baseline run](https://github.com/devshahid21/attendance-management-system/actions/runs/39780512128), 6 tests / 33 assertions on PHP 8.4 and SQLite, plus MySQL migration/seeding checks. Those results do not verify this Laravel 10 conversion.
+
+The current workflow runs dependency installation, route registration, Blade compilation and feature tests on PHP 8.1 with SQLite, and migration/seeding plus feature tests with MySQL 8. See the pull request's actual Actions results for current pass/fail status. No PHP/Composer runtime is available in the editing environment. Manual browser acceptance and production deployment remain unverified.
 
 Additional limitations:
 - Employee deactivation preserves attendance but the simple active flag does not track historical employment effective dates, so older absent totals for a now-inactive user can change.
