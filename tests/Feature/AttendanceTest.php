@@ -71,4 +71,29 @@ class AttendanceTest extends TestCase
             $this->assertDatabaseMissing('attendances',['employee_id'=>$b->employee->id]);
         } finally { Carbon::setTestNow(); }
     }
+    public function test_admin_can_add_missing_attendance_with_reason_and_history(): void {
+        $employeeUser=$this->employee(7);
+        $admin=User::create(['name'=>'Admin','email'=>'admin@example.test','password'=>'secret12345','role'=>'admin']);
+        Carbon::setTestNow(Carbon::parse('2026-10-22 14:00:00','Asia/Karachi'));
+        try {
+            $this->actingAs($employeeUser)->get('/attendance/add')->assertForbidden();
+            $this->actingAs($admin)->post('/attendance/add',[
+                'employee_id'=>$employeeUser->employee->id,
+                'attendance_date'=>'2026-10-21',
+                'check_in_at'=>'09:25',
+                'check_out_at'=>'17:00',
+                'reason'=>'Manual verified paper register correction',
+            ])->assertRedirect();
+            $this->assertDatabaseHas('attendances',[
+                'employee_id'=>$employeeUser->employee->id,'attendance_date'=>'2026-10-21','status'=>'late'
+            ]);
+            $this->assertDatabaseHas('attendance_corrections',['reason'=>'Manual verified paper register correction','admin_id'=>$admin->id]);
+            $this->actingAs($admin)->post('/attendance/add',[
+                'employee_id'=>$employeeUser->employee->id,'attendance_date'=>'2026-10-21',
+                'check_in_at'=>'09:25','reason'=>'Duplicate attempt',
+            ])->assertSessionHasErrors('attendance_date');
+            $this->assertDatabaseCount('attendances',1);
+        } finally { Carbon::setTestNow(); }
+    }
+
 }
