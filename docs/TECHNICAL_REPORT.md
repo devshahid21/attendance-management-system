@@ -14,10 +14,10 @@ Traditional Laravel MVC. Routes in routes/web.php -> role middleware -> controll
 Timezone Asia/Karachi. Day status is resolved in order: non-working, future, actual check-in status, pending today, absent on a completed active working day, inactive when not active. A day is late if arrival time exceeds office start plus configured grace minutes. At most one entry per employee/calendar date; checking out updates the existing row only.
 
 ## 4. Implemented source features
-Auth controllers, role middleware, department management, employee account creation and editing, deactivate/reactivate, daily attendance, employee history, admin date filters, correction history, monthly aggregates and CSV export. Responsive Blade screens and example seed accounts are included.
+Auth controllers, role middleware, department management, employee account creation and editing, deactivate/reactivate, daily attendance, employee history, admin date filters, correction history (including missing-day corrections), monthly aggregates and CSV export. Responsive Blade screens and example seed accounts are included.
 
 ## 5. Limitations
-No real-world deployment, no historical employment timeline, admin cannot yet create a missing-day record via correction, no pagination on monthly aggregates, no overnight shifts or holiday calendar beyond weekdays. For smaller local demos, this scope keeps the code straightforward. Production rollout would additionally require hardening, monitoring, backups and real user acceptance.
+No real-world deployment, no historical employment timeline, no pagination on monthly aggregates, no overnight shifts or holiday calendar beyond weekdays. For smaller local demos, this scope keeps the code straightforward. Production rollout would additionally require hardening, monitoring, backups and real user acceptance.
 
 ## 6. Tests and environment
-Feature test source covers role separation, forged employee ID, duplicate check-in, check-out-before-in and repeated checkout, late threshold, future/current/past/nonworking classification. **Not executed** in this session: Composer missing and database extensions absent. Do not interpret test source as passing results. See README and acceptance checklist for local execution steps.
+GitHub Actions successfully ran Composer install, route listing, Blade compilation and **6 feature tests / 33 assertions** (PHP 8.4, in-memory SQLite) on commit b8b82d6312e57450ed58085d9f53b8aaeee8c0be. Tests cover authorization, forged employee ID, duplicate check-in, check-out rules, status calculations and audited missing-day corrections. **MySQL-specific behavior and manual browser acceptance remain unverified.**

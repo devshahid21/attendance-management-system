@@ -8,7 +8,7 @@ A small-company server-rendered application with **Laravel 13**, **PHP 8.3+**, *
 ## Features
 
 - Admin and employee login/logout, role middleware, server-side validation and CSRF.
-- Admin: departments, employee CRUD (deactivation preserves records), individual login creation, day/department/employee filters, attendance corrections with required reasons and history, monthly CSV export.
+- Admin: departments, employee CRUD (deactivation preserves records), individual login creation, day/department/employee filters, attendance corrections with required reasons and history (including creating missing-day records), monthly CSV export.
 - Employee: personal profile, one daily check-in, single check-out, monthly history/summary.
 - Attendance: Asia/Karachi, Monday–Friday by default, office start 09:00, 15-minute grace; configurable in .env.
 - Absence is **derived** for elapsed working days without a record, never inserted as a separate absence row.
@@ -72,11 +72,11 @@ See [docs/ER_DIAGRAM.md](docs/ER_DIAGRAM.md).
 
 ## Known limitations and verification status
 
-The development environment had PHP 8.4.24 but no Composer and no PHP PDO MySQL/SQLite extension. Consequently the Laravel application **was not booted**, migrations were **not run**, and PHPUnit tests were **not executed**. They are provided for execution on a correctly configured machine; results must not be assumed.
+GitHub Actions on Ubuntu with **PHP 8.4** successfully installed Composer packages, registered routes, compiled Blade templates and ran **6 passing feature tests (33 assertions)** using in-memory SQLite. See the [verified run](https://github.com/devshahid21/attendance-management-system/actions/runs/39780175894). The separate local tool environment lacked Composer and PDO database extensions; **MySQL migrations, end-to-end browser flows, and a production deployment remain unverified**.
 
 Additional limitations:
 - Employee deactivation preserves attendance but the simple active flag does not track historical employment effective dates, so older absent totals for a now-inactive user can change.
-- Admin correction currently applies to **existing attendance entries**; missing-day manual attendance insertion is not implemented.
+- Admin can record a missing past working day with a required reason; corrections never silently overwrite an existing day.
 - Correction history records each edit and reason, not immutable external audit storage.
 - No pagination on monthly report (suitable for a small demo); day and employee lists are paginated.
 - Only same-day check-out; no overnight shifts.

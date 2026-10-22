@@ -13,6 +13,7 @@ All items **unchecked** until a tester executes them on a local Laravel/MySQL in
 - [ ] Current unmarked working day shows Pending; elapsed working day => Absent; future => Future; weekends => Non-working.
 - [ ] Admin filters by date, employee and department and sees matching records.
 - [ ] Admin corrects an existing row with a required reason; saved history includes before/after and admin.
+- [ ] Admin adds a missing past working-day record with a reason; duplicate insertion is rejected.
 - [ ] Deactivate employee; attendance history remains in the database; inactive employee cannot check in.
 - [ ] Monthly report shows present/late/absent and CSV opens with the same filter.
 - [ ] Revisit pages on narrow/mobile screen for navigation and table usability.
@@ -25,3 +26,7 @@ All items **unchecked** until a tester executes them on a local Laravel/MySQL in
 4. Explain unique daily index, role checks, absence calculation, and no payroll/biometrics.
 
 Record environment, tester, date, and actual results separately when tests run.
+
+## Automated verification (GitHub Actions)
+
+On 2026-10-22, CI completed successfully using PHP 8.4 and SQLite: Composer install, route listing, Blade compilation, **6 passing tests and 33 assertions**. This is separate from the unchecked manual MySQL/browser scenarios above.
