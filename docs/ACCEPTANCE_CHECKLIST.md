@@ -30,3 +30,7 @@ Record environment, tester, date, and actual results separately when tests run.
 ## Automated verification (GitHub Actions)
 
 On 2026-10-22, CI completed successfully using PHP 8.4 and SQLite: Composer install, route listing, Blade compilation, **6 passing tests and 33 assertions**. On the same date a separate GitHub Actions job also completed MySQL 8 migrations and seeders successfully. This is separate from the unchecked manual browser scenarios above.
+
+## Laravel 10 / PHP 8.1 conversion
+
+The earlier results above belong to the Laravel 13 baseline. The compatibility workflow runs PHP 8.1 with SQLite and MySQL 8, including login/logout and guest redirection tests in addition to the existing attendance tests. Record only actual current workflow outcomes; manual items remain unchecked. This is a current reconstruction using a 2023-era stack, not a backdated original project.
