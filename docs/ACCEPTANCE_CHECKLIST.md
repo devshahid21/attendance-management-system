@@ -44,3 +44,6 @@ The earlier results above belong to the Laravel 13 baseline. The compatibility w
 - [ ] Existing attendance takes precedence over leave; future and non-working days are not counted as leave.
 - [ ] Re-run demo seeding without overwriting corrections, passwords or existing requests.
 - [ ] Check Leave requests / My leave pages on desktop and mobile.
+
+## Portal and responsive UI checks
+Automated feature tests cover all administrator page renders, employee denial of every administrator read/write route, guest redirection, own-password validation, account creation without role escalation, retained history and corrections before checkout. The browser workflow tests real sessions/forms, CSRF rejection, mobile navigation, leave approval and CSV downloads. See the current `portal-ui-checks` workflow artifact for browser results and screenshots. No live-company or production deployment is claimed.
