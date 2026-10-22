@@ -72,7 +72,7 @@ See [docs/ER_DIAGRAM.md](docs/ER_DIAGRAM.md).
 
 ## Known limitations and verification status
 
-GitHub Actions on Ubuntu with **PHP 8.4** successfully installed Composer packages, registered routes, compiled Blade templates and ran **6 passing feature tests (33 assertions)** using in-memory SQLite. See the [verified run](https://github.com/devshahid21/attendance-management-system/actions/runs/39780175894). The separate local tool environment lacked Composer and PDO database extensions; **MySQL migrations, end-to-end browser flows, and a production deployment remain unverified**.
+GitHub Actions on Ubuntu with **PHP 8.4** successfully installed Composer packages, registered routes, compiled Blade templates and ran **6 passing feature tests (33 assertions)** using in-memory SQLite. A second CI job successfully ran **MySQL 8 migrations and the demonstration seeder**. See the [verified dual-job run](https://github.com/devshahid21/attendance-management-system/actions/runs/39780512128). The separate local tool environment lacked Composer and PDO database extensions. **Manual browser flows, full MySQL feature tests, and production deployment remain unverified**.
 
 Additional limitations:
 - Employee deactivation preserves attendance but the simple active flag does not track historical employment effective dates, so older absent totals for a now-inactive user can change.

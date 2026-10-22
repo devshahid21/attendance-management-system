@@ -29,4 +29,4 @@ Record environment, tester, date, and actual results separately when tests run.
 
 ## Automated verification (GitHub Actions)
 
-On 2026-10-22, CI completed successfully using PHP 8.4 and SQLite: Composer install, route listing, Blade compilation, **6 passing tests and 33 assertions**. This is separate from the unchecked manual MySQL/browser scenarios above.
+On 2026-10-22, CI completed successfully using PHP 8.4 and SQLite: Composer install, route listing, Blade compilation, **6 passing tests and 33 assertions**. On the same date a separate GitHub Actions job also completed MySQL 8 migrations and seeders successfully. This is separate from the unchecked manual browser scenarios above.
