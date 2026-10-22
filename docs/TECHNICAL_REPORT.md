@@ -25,3 +25,13 @@ No real-world deployment, no historical employment timeline, no pagination on mo
 
 ## 6. Tests and environment
 GitHub Actions successfully ran Composer install, route listing, Blade compilation and **6 feature tests / 33 assertions** (PHP 8.4, in-memory SQLite) on commit b8b82d6312e57450ed58085d9f53b8aaeee8c0be. Tests cover authorization, forged employee ID, duplicate check-in, check-out rules, status calculations and audited missing-day corrections. On 2026-10-22 a separate CI job also completed **MySQL 8 migrations and demo seeding** successfully. These are historical baseline checks, not verification of the Laravel 10 conversion. The compatibility workflow now targets PHP 8.1 and runs feature tests against SQLite and MySQL 8. Read the current pull request Actions logs for actual results. Manual browser acceptance remains unverified.
+
+## 7. Leave Management module
+Employees submit casual, sick or annual leave for today or future dates, up to 31 calendar days per request. Ranges must contain a working day. Only admins review requests; rejection requires a reason. Review metadata records the admin, time and note, and decisions cannot be overwritten. Pending/approved overlapping requests are prevented while submissions are serialized per employee.
+
+Approved leave is shown as Leave rather than Absent on completed working days and today when no attendance record exists. Actual attendance takes precedence; future/non-working dates keep their existing labels. Monthly CSV includes a Leave column. There are no leave quotas, payroll calculations or holiday calendars.
+
+## 8. Synthetic demonstration data
+The local/testing-only seeder creates 4 departments, 8 fictional employees, one demo admin, attendance examples from the previous 20 working days, and 3 leave requests (approved, pending, rejected). Missing attendance demonstrates derived absence. firstOrCreate preserves existing records and passwords on repeated runs. All dates are relative to installation date; these are not historical company records.
+
+Additional feature tests cover request ownership, role separation, forged IDs/status, invalid dates, overlap, inactive accounts, one-time review, leave/report/CSV integration and repeatable demo seeding. Read the current Actions run for actual test outcomes. Manual browser acceptance remains outstanding.
