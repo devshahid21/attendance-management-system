@@ -14,6 +14,22 @@ class AttendanceTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_guest_is_redirected_to_login(): void {
+        $this->get('/')->assertRedirect('/login');
+        $this->get('/login')->assertOk();
+    }
+
+    public function test_employee_can_login_with_hashed_password_and_logout(): void {
+        $user = $this->employee(8);
+        $this->assertNotSame('secret12345', $user->getRawOriginal('password'));
+        $this->post('/login', ['email' => $user->email, 'password' => 'secret12345'])
+            ->assertRedirect('/');
+        $this->assertAuthenticatedAs($user);
+        $this->get('/login')->assertRedirect('/');
+        $this->post('/logout')->assertRedirect('/login');
+        $this->assertGuest();
+    }
+
     private function employee(int $n): User {
         $user=User::create(['name'=>"Person {$n}",'email'=>"person{$n}@example.test",'password'=>'secret12345','role'=>'employee']);
         $dept=Department::firstOrCreate(['name'=>'Engineering']);
