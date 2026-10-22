@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Attendance extends Model
 {
     protected $fillable = ['employee_id','attendance_date','check_in_at','check_out_at','status'];
-    protected function casts(): array { return ['attendance_date'=>'date']; }
+    protected $casts = ['attendance_date' => 'date'];
     public function setAttendanceDateAttribute($value): void
     {
         $this->attributes['attendance_date'] = \Illuminate\Support\Carbon::parse($value)->toDateString();
