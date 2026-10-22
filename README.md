@@ -3,7 +3,7 @@
 **Developer:** Muhammad Shahid  
 **Project type:** Newly rebuilt **educational demonstration** inspired by an earlier BS Information Technology FYP. **Not** historical FYP source code or a deployed company product.
 
-A small-company server-rendered application with **Laravel 10**, **PHP 8.1 / 8.2**, **MySQL 8+**, **Blade**, and **Bootstrap 5.3.2** (CDN). No React, separate API, payroll, biometrics, GPS, AI or complex shift handling.
+A small-company server-rendered application with **Laravel 10**, **PHP 8.1 / 8.2**, **MySQL 8+**, **Blade**, and **Bootstrap 5.3.2** (local assets). No React, separate API, payroll, biometrics, GPS, AI or complex shift handling.
 
 ## 2023-era compatibility
 
@@ -23,9 +23,16 @@ The Laravel 10 structure uses HTTP/console kernels, an exception handler, a rout
 - Absence is **derived** for elapsed working days without a record, never inserted as a separate absence row.
 - All demo users/data are fictional and passwords are hashed by the User model.
 
+## Portals and access
+
+- Admin: team directory, employee creation/editing and activation, departments, daily attendance/corrections, leave approvals, monthly reports/CSV, and a read-only Roles & Access overview.
+- Employee: own dashboard, profile, attendance, check-in/out and leave requests. Inactive employees retain history access but cannot submit attendance or new leave.
+- Both roles: own password change, validated against the current password. Employee creation cannot grant administrator access. Login attempts are rate-limited.
+- The responsive interface includes a mobile navigation drawer, keyboard focus states, validation feedback and private-access error pages.
+
 ## Installation
 
-Prerequisites: PHP **8.1 or 8.2** with required Laravel extensions, Composer 2, MySQL 8+, and internet connection for Composer and Bootstrap CSS.
+Prerequisites: PHP **8.1 or 8.2** with required Laravel extensions, Composer 2, MySQL 8+, and internet access for the initial Composer installation. UI assets are included locally.
 
 1. Clone the repository and open a terminal in it.
 2. Run: composer install
@@ -94,7 +101,7 @@ See [docs/ER_DIAGRAM.md](docs/ER_DIAGRAM.md).
 
 Previous Laravel 13 verification: [baseline run](https://github.com/devshahid21/attendance-management-system/actions/runs/39780512128), 6 tests / 33 assertions on PHP 8.4 and SQLite, plus MySQL migration/seeding checks. Those results do not verify this Laravel 10 conversion.
 
-The current workflow runs dependency installation, route registration, Blade compilation and feature tests on PHP 8.1 with SQLite, and migration/seeding plus feature tests with MySQL 8. See the pull request's actual Actions results for current pass/fail status. No PHP/Composer runtime is available in the editing environment. Manual browser acceptance and production deployment remain unverified.
+The current workflow runs dependency installation, route registration, Blade compilation and feature tests on PHP 8.1 with SQLite, and migration/seeding plus feature tests with MySQL 8. See the pull request's actual Actions results for current pass/fail status. Local PHP feature checks and the GitHub Actions jobs verify the implementation. The browser UI workflow exercises actual form submissions and responsive navigation; see the latest run for results. Production deployment is not verified.
 
 Additional limitations:
 - Employee deactivation preserves attendance but the simple active flag does not track historical employment effective dates, so older absent totals for a now-inactive user can change.
@@ -102,5 +109,11 @@ Additional limitations:
 - Correction history records each edit and reason, not immutable external audit storage.
 - No pagination on monthly report (suitable for a small demo); day and employee lists are paginated.
 - Only same-day check-out; no overnight shifts.
-- Demo CSS is loaded from Bootstrap CDN; no offline asset build.
+- Bootstrap CSS, custom CSS, icons and JavaScript are local assets; no frontend build step is required.
 - Seeders use known demonstration passwords; do not run against live data.
+
+## Browser UI verification
+
+The optional `ui-smoke` GitHub Actions job uses Chrome and Playwright to exercise desktop/mobile portals, CSRF rejection, department/employee creation, attendance, leave approval, account activation, CSV download and password change. Screenshots and a results JSON are saved as the `portal-ui-checks` workflow artifact. Node/Playwright are test tools only; running the application requires no Node build.
+
+For a local browser check with Chrome installed: install Playwright into an isolated test-tools directory, set `NODE_PATH` to its node_modules directory, start the seeded demo at http://127.0.0.1:8000, and run `node tests/browser/smoke.cjs`. Use a disposable demo database: the browser scenario intentionally creates and edits synthetic records.
