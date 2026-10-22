@@ -10,7 +10,7 @@
 <div class="table-responsive"><table class="table table-striped"><thead><tr><th>Employee</th><th>Department</th><th>Check-in</th><th>Check-out</th><th>Status</th><th></th></tr></thead><tbody>
 @forelse($items as $e)
 @php($record=$e->attendances->first())
-@php($label=\App\Support\AttendanceRules::label(\Carbon\Carbon::parse($date,'Asia/Karachi'),$record,$e->active))
+@php($label=\App\Support\AttendanceRules::label(\Carbon\Carbon::parse($date,'Asia/Karachi'),$record,$e->active,$e->leaveRequests->isNotEmpty()))
 <tr><td>{{ $e->name }}</td><td>{{ $e->department->name }}</td><td>{{ $record?->check_in_at??'—' }}</td><td>{{ $record?->check_out_at??'—' }}</td>
 <td><span class="badge text-bg-{{ $label==='Late'?'warning':($label==='Present'?'success':($label==='Absent'?'danger':'secondary')) }}">{{ $label }}</span></td>
 <td>@if($record)<a href="{{ route('attendance.edit',$record) }}" class="btn btn-sm btn-outline-primary">Correct</a>@endif</td></tr>
