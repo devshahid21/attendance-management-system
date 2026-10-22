@@ -17,7 +17,8 @@ The Laravel 10 structure uses HTTP/console kernels, an exception handler, a rout
 
 - Admin and employee login/logout, role middleware, server-side validation and CSRF.
 - Admin: departments, employee CRUD (deactivation preserves records), individual login creation, day/department/employee filters, attendance corrections with required reasons and history (including creating missing-day records), monthly CSV export.
-- Employee: personal profile, one daily check-in, single check-out, monthly history/summary.
+- Employee: personal profile, one daily check-in, single check-out, monthly history/summary, and leave requests.
+- Leave management: casual/sick/annual requests; admin approval/rejection with reviewer/date/note; overlap protection; approved leave shown separately in reports/CSV. No paid-leave balances.
 - Attendance: Asia/Karachi, Monday–Friday by default, office start 09:00, 15-minute grace; configurable in .env.
 - Absence is **derived** for elapsed working days without a record, never inserted as a separate absence row.
 - All demo users/data are fictional and passwords are hashed by the User model.
@@ -51,6 +52,16 @@ Note: This repository contains source files but does **not** commit vendor/ or c
 
 **Never use these credentials in production.** Seed synthetic data only in development. Change passwords or remove seed accounts before any deployment.
 
+## Demo data and leave management
+
+Run `php artisan migrate --seed` against your local demo database after checking out this branch. For an existing installation, `php artisan migrate` adds the leave table without resetting attendance; `php artisan db:seed` adds synthetic examples. Do not use migrate:fresh on an existing database you want to preserve.
+
+The seeder creates **4 departments, 8 fictional employees and 1 admin**, attendance from the **previous 20 working days**, and **3 leave requests** (approved/pending/rejected). Dates are relative to installation time; no real company information is used. Repeated seeding preserves existing accounts, corrections and records. It is blocked outside local/testing environments.
+
+All employee demo accounts use `DemoEmployee123!`: ayesha, bilal, sara, usman, hina, omar, zain and maryam at `example.test`. Admin credentials remain as listed above. Use the previous working day for Ayesha's approved-leave example and today's month/previous month for attendance reports.
+
+Employees select **My leave** to submit requests. Admins select **Leave requests** to review them; rejected requests require a note. Requests are limited to 31 calendar days and must contain a working day. Approved leave does not count as absence. Actual attendance takes precedence if both exist, and future/non-working days are not counted as leave. There are no quotas or payroll adjustments.
+
 ## Configure attendance
 
 In .env:
@@ -63,7 +74,8 @@ Then run: php artisan config:clear
 
 ## Routes (web pages)
 
-- /login, /logout, /
+- /login, /logout, /, /leaves
+- Employee: POST /leaves; Admin: PATCH /leaves/{leaveRequest}
 - Admin: /departments, /employees, /attendance, /reports, /reports/export
 - Employee: /my-profile, /my-attendance, POST /check-in, POST /check-out
 
