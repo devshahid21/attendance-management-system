@@ -34,3 +34,13 @@ On 2026-10-22, CI completed successfully using PHP 8.4 and SQLite: Composer inst
 ## Laravel 10 / PHP 8.1 conversion
 
 The earlier results above belong to the Laravel 13 baseline. The compatibility workflow runs PHP 8.1 with SQLite and MySQL 8, including login/logout and guest redirection tests in addition to the existing attendance tests. Record only actual current workflow outcomes; manual items remain unchecked. This is a current reconstruction using a 2023-era stack, not a backdated original project.
+
+## Leave and sample data
+- [ ] Run php artisan migrate --seed in local environment; check 4 departments, 8 employees and sample history for the previous 20 working days.
+- [ ] Employee submits a leave request; pending and approved overlapping requests are rejected.
+- [ ] Employee can see only their own leave and cannot approve requests.
+- [ ] Admin approves/rejects pending leave; rejection requires a reason; reviewed decisions cannot be overwritten.
+- [ ] Approved leave displays separately from absence in daily attendance, employee history, monthly report and CSV.
+- [ ] Existing attendance takes precedence over leave; future and non-working days are not counted as leave.
+- [ ] Re-run demo seeding without overwriting corrections, passwords or existing requests.
+- [ ] Check Leave requests / My leave pages on desktop and mobile.
