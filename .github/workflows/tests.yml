@@ -54,3 +54,41 @@ jobs:
       - run: cp .env.example .env && php artisan key:generate
       - run: php artisan migrate --seed --force
       - run: php artisan test --display-warnings --no-ansi
+
+  ui-smoke:
+    runs-on: ubuntu-latest
+    env:
+      APP_ENV: local
+      DB_CONNECTION: sqlite
+      DB_DATABASE: /tmp/attendance-ui.sqlite
+      NODE_PATH: /tmp/attendance-browser/node_modules
+      EMIT_QA_IMAGES: '1'
+      UI_OUTPUT_DIR: /tmp/attendance-ui
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer:2.8
+          extensions: mbstring, xml, ctype, pdo_sqlite, sqlite3, bcmath, curl, fileinfo, openssl, tokenizer
+          coverage: none
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: composer install --no-interaction --prefer-dist
+      - run: |
+          cp .env.example .env
+          touch /tmp/attendance-ui.sqlite
+          php artisan key:generate
+          php artisan migrate --seed --force
+          nohup php artisan serve --host=127.0.0.1 --port=8000 > /tmp/attendance-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8000/login > /dev/null && break; sleep 1; done
+      - run: npm install --prefix /tmp/attendance-browser --no-save --package-lock=false playwright@1.51.1
+      - run: node tests/browser/smoke.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portal-ui-checks
+          path: |
+            /tmp/attendance-ui
+            /tmp/attendance-server.log
