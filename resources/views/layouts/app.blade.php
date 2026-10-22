@@ -17,6 +17,7 @@
 <a class="btn btn-sm btn-outline-light" href="{{ route('profile') }}">Profile</a>
 <a class="btn btn-sm btn-outline-light" href="{{ route('attendance.mine') }}">My history</a>
 @endif
+<a class="btn btn-sm btn-outline-light" href="{{ route('leaves.index') }}">{{ auth()->user()->role==='admin'?'Leave requests':'My leave' }}</a>
 <span class="text-white small">{{ auth()->user()->name }} ({{ auth()->user()->role }})</span>
 <form action="{{ route('logout') }}" method="post">@csrf<button class="btn btn-sm btn-light">Log out</button></form>
 </div>@endif</div></nav>
