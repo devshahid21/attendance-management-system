@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','Attendance')
 @section('content')
-<h1 class="h3">Attendance by date</h1>
+<div class="d-flex justify-content-between align-items-center"><h1 class="h3">Attendance by date</h1><a class="btn btn-primary" href="{{ route('attendance.manual') }}">Add missed-day correction</a></div>
 <form class="row g-2 mb-3" method="get">
 <div class="col-md-3"><input aria-label="Date" class="form-control" type="date" name="date" value="{{ $date }}"></div>
 <div class="col-md-3"><select aria-label="Department" class="form-select" name="department_id"><option value="">All departments</option>@foreach($departments as $d)<option value="{{ $d->id }}" @selected(request('department_id')==$d->id)>{{ $d->name }}</option>@endforeach</select></div>
