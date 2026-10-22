@@ -35,3 +35,8 @@ Approved leave is shown as Leave rather than Absent on completed working days an
 The local/testing-only seeder creates 4 departments, 8 fictional employees, one demo admin, attendance examples from the previous 20 working days, and 3 leave requests (approved, pending, rejected). Missing attendance demonstrates derived absence. firstOrCreate preserves existing records and passwords on repeated runs. All dates are relative to installation date; these are not historical company records.
 
 Additional feature tests cover request ownership, role separation, forged IDs/status, invalid dates, overlap, inactive accounts, one-time review, leave/report/CSV integration and repeatable demo seeding. Read the current Actions run for actual test outcomes. Manual browser acceptance remains outstanding.
+
+## 9. Portals, permissions and interface
+The application provides separate role-based navigation and dashboards with server-computed metrics. Administrator routes are protected from employee reads and writes, including direct URL/form attempts. Employees can only access their own attendance, profile and leave. Account settings allow a current-password-verified change of the signed-in user’s password. No editable permission builder is provided: the two roles have fixed, explicit capabilities.
+
+The responsive Blade UI uses locally hosted Bootstrap 5.3.2, custom CSS, SVG icons and a small navigation/clock script. No external CSS CDN or frontend build is required. Guest, employee and administrator access, account updates, inactive-account restrictions, CSRF and browser form workflows are verified by feature tests and the UI smoke job. Read the final workflow result for counts and screenshots.
