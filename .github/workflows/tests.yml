@@ -15,10 +15,7 @@ jobs:
           extensions: mbstring, xml, ctype, pdo_sqlite, sqlite3, bcmath, curl, fileinfo, openssl, tokenizer
           coverage: none
       - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
       - run: php artisan route:list
-        env:
-          APP_KEY: "base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       - run: php artisan view:cache
-        env:
-          APP_KEY: "base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
       - run: php artisan test --display-warnings --no-ansi
