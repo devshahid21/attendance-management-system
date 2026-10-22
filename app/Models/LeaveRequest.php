@@ -18,6 +18,16 @@ class LeaveRequest extends Model
         'start_date' => 'date', 'end_date' => 'date', 'reviewed_at' => 'datetime',
     ];
 
+    public function setStartDateAttribute($value): void
+    {
+        $this->attributes['start_date'] = Carbon::parse($value)->toDateString();
+    }
+
+    public function setEndDateAttribute($value): void
+    {
+        $this->attributes['end_date'] = Carbon::parse($value)->toDateString();
+    }
+
     public function employee(): BelongsTo { return $this->belongsTo(Employee::class); }
     public function reviewer(): BelongsTo { return $this->belongsTo(User::class, 'reviewed_by'); }
 
