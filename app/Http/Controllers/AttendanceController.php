@@ -92,8 +92,8 @@ class AttendanceController extends Controller
     }
     public function update(Request $r, Attendance $attendance) {
         $v=$r->validate([
-            'check_in_at'=>['nullable','date_format:H:i'],
-            'check_out_at'=>['nullable','date_format:H:i','required_with:check_in_at','after_or_equal:check_in_at'],
+            'check_in_at'=>['required','date_format:H:i'],
+            'check_out_at'=>['nullable','date_format:H:i','after_or_equal:check_in_at'],
             'reason'=>['required','string','min:5','max:1000'],
         ]);
         if (!empty($v['check_out_at']) && empty($v['check_in_at']))
