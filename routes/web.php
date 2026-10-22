@@ -7,20 +7,24 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\LeaveRequestController;
 
 Route::get('/login',[AuthController::class,'form'])->middleware('guest')->name('login');
 Route::post('/login',[AuthController::class,'login'])->middleware('guest')->name('login.submit');
 Route::post('/logout',[AuthController::class,'logout'])->middleware('auth')->name('logout');
 
 Route::middleware('auth')->group(function(){
+    Route::get('/leaves',[LeaveRequestController::class,'index'])->name('leaves.index');
     Route::get('/',[DashboardController::class,'index'])->name('dashboard');
     Route::middleware('role:employee')->group(function(){
+        Route::post('/leaves',[LeaveRequestController::class,'store'])->name('leaves.store');
         Route::post('/check-in',[AttendanceController::class,'checkIn'])->name('checkin');
         Route::post('/check-out',[AttendanceController::class,'checkOut'])->name('checkout');
         Route::get('/my-attendance',[AttendanceController::class,'mine'])->name('attendance.mine');
         Route::get('/my-profile',fn()=>view('employees.profile',['employee'=>auth()->user()->employee?->load('department')]))->name('profile');
     });
     Route::middleware('role:admin')->group(function(){
+        Route::patch('/leaves/{leaveRequest}',[LeaveRequestController::class,'review'])->name('leaves.review');
         Route::resource('departments',DepartmentController::class)->only(['index','store','update','destroy']);
         Route::resource('employees',EmployeeController::class)->except(['destroy']);
         Route::post('/employees/{employee}/deactivate',[EmployeeController::class,'deactivate'])->name('employees.deactivate');
