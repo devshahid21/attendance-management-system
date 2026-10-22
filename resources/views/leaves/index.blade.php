@@ -33,7 +33,7 @@
 <label class="visually-hidden" for="decision-{{ $item->id }}">Decision</label>
 <select id="decision-{{ $item->id }}" name="status" class="form-select form-select-sm mb-2"><option value="approved">Approve</option><option value="rejected">Reject</option></select>
 <label class="visually-hidden" for="note-{{ $item->id }}">Review note</label>
-<textarea id="note-{{ $item->id }}" name="review_note" class="form-control form-control-sm mb-2" rows="2" maxlength="1000" placeholder="Reason required when rejecting"></textarea>
+<textarea id="note-{{ $item->id }}" name="review_note" class="form-control form-control-sm mb-2 review-note" rows="2" maxlength="1000" placeholder="Reason required when rejecting"></textarea>
 <button class="btn btn-sm btn-primary">Save decision</button></form>
 @else
 {{ $item->reviewer?->name ?? 'Awaiting admin review' }}
