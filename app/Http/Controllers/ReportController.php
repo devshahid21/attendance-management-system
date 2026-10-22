@@ -14,17 +14,18 @@ class ReportController extends Controller
         $month=$v['month']??now('Asia/Karachi')->format('Y-m');
         $start=Carbon::createFromFormat('!Y-m',$month,'Asia/Karachi')->startOfMonth();
         $end=$start->copy()->endOfMonth();
-        $employees=Employee::with(['department','attendances'=>fn($q)=>$q->whereBetween('attendance_date',[$start->toDateString(),$end->toDateString()])])
+        $employees=Employee::with(['department','attendances'=>fn($q)=>$q->whereBetween('attendance_date',[$start->toDateString(),$end->toDateString()]),
+            'leaveRequests'=>fn($q)=>$q->approved()->overlapping($start->toDateString(),$end->toDateString())])
             ->when(isset($v['department_id']),fn($q)=>$q->where('department_id',$v['department_id']))
             ->when(isset($v['employee_id']),fn($q)=>$q->whereKey($v['employee_id']))->orderBy('name')->get();
         $rows=[];
         foreach($employees as $employee){
-            $present=$late=$absent=0; $byDate=$employee->attendances->keyBy(fn($a)=>$a->attendance_date->toDateString());
+            $present=$late=$absent=$leave=0; $byDate=$employee->attendances->keyBy(fn($a)=>$a->attendance_date->toDateString());
             for($d=$start->copy();$d->lte($end);$d->addDay()){
-                $status=AttendanceRules::label($d,$byDate->get($d->toDateString()),$employee->active);
-                if($status==='Present')$present++; elseif($status==='Late')$late++; elseif($status==='Absent')$absent++;
+                $status=AttendanceRules::label($d,$byDate->get($d->toDateString()),$employee->active,$employee->leaveRequests->contains(fn($request)=>$request->coversDate($d)));
+                if($status==='Present')$present++; elseif($status==='Late')$late++; elseif($status==='Absent')$absent++; elseif($status==='Leave')$leave++;
             }
-            $rows[]=compact('employee','present','late','absent');
+            $rows[]=compact('employee','present','late','absent','leave');
         }
         return compact('rows','month');
     }
@@ -35,10 +36,10 @@ class ReportController extends Controller
         $data=$this->data($r);
         return response()->streamDownload(function()use($data) {
             $h=fopen('php://output','w');
-            fputcsv($h,['Code','Employee','Department','Month','Present','Late','Absent']);
+            fputcsv($h,['Code','Employee','Department','Month','Present','Late','Absent','Leave']);
             foreach($data['rows'] as $row){
                 $e=$row['employee'];
-                fputcsv($h,[$e->employee_code,$e->name,$e->department->name,$data['month'],$row['present'],$row['late'],$row['absent']]);
+                fputcsv($h,[$e->employee_code,$e->name,$e->department->name,$data['month'],$row['present'],$row['late'],$row['absent'],$row['leave']]);
             }
             fclose($h);
         },'attendance-'.$data['month'].'.csv',['Content-Type'=>'text/csv; charset=UTF-8']);
