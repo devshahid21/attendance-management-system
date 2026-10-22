@@ -22,6 +22,13 @@
   mobile.addEventListener('change', syncNav); syncNav();
   document.querySelectorAll('[data-dismiss-alert]').forEach(button => button.addEventListener('click', () => button.closest('.app-alert').remove()));
   document.querySelectorAll('[data-confirm]').forEach(form => form.addEventListener('submit', event => { if (!window.confirm(form.dataset.confirm)) event.preventDefault(); }));
+  const tableHints = Array.from(document.querySelectorAll('.table-responsive')).map(table => {
+    const hint = document.createElement('p');
+    hint.className = 'table-scroll-hint'; hint.textContent = 'Swipe left or right to view all columns.';
+    table.before(hint); return { table, hint };
+  });
+  const updateTableHints = () => tableHints.forEach(({ table, hint }) => { hint.hidden = table.scrollWidth <= table.clientWidth + 1; });
+  updateTableHints(); window.addEventListener('resize', updateTableHints);
   const paintClock = () => document.querySelectorAll('[data-clock]').forEach(el => {
     el.textContent = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Karachi', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
   });
