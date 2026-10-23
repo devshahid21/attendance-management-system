@@ -18,7 +18,7 @@ class LeaveRequestController extends Controller
         $data = $request->validate([
             'status' => ['nullable', Rule::in(['pending', 'approved', 'rejected'])],
         ]);
-        $admin = $request->user()->role === 'admin';
+        $admin = in_array($request->user()->role, ['admin', 'superadmin'], true);
         abort_unless($admin || $request->user()->employee, 403);
 
         $items = LeaveRequest::with(['employee.department', 'reviewer'])

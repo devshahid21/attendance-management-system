@@ -2,6 +2,16 @@
 
 ```mermaid
 erDiagram
+    EMPLOYEES ||--o{ SALARIES : "has monthly base records"
+    USERS ||--o{ SALARIES : "last updates"
+    SALARIES {
+        bigint id PK
+        bigint employee_id FK
+        date effective_month
+        decimal amount
+        string note
+        bigint updated_by FK
+    }
     USERS ||--o| EMPLOYEES : "has one employee profile"
     DEPARTMENTS ||--o{ EMPLOYEES : "contains"
     EMPLOYEES ||--o{ ATTENDANCES : "has"
@@ -14,7 +24,7 @@ erDiagram
         string name
         string email UK
         string password
-        enum role
+        string role
     }
     DEPARTMENTS {
         bigint id PK
@@ -59,3 +69,5 @@ erDiagram
 
 **Constraint:** unique (employee_id, attendance_date) prevents duplicate daily attendance.
 **Retention:** employees, users and attendances are not deleted when a person is deactivated.
+
+**Salary constraint:** unique (employee_id, effective_month). Only Super Admin can manage salary records.

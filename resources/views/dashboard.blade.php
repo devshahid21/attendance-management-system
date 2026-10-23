@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title','Overview')
 @section('content')
-@if(auth()->user()->role==='admin')
+@if(in_array(auth()->user()->role,['admin','superadmin'],true))
 <div class="page-heading"><div><div class="eyebrow">WORKSPACE OVERVIEW</div><h1>A clear view of your team.</h1><p>Welcome back, {{ \Illuminate\Support\Str::before(auth()->user()->name,' ') }}. Here is how your workplace is doing.</p></div><a class="btn btn-primary" href="{{ route('employees.create') }}"><x-icon name="plus" size="16"/>Add employee</a></div>
 <div class="metric-grid">
 @foreach([['Active employees',$employees,'People in your workspace','users',''],['Checked in today',$today,'Attendance recorded today','check','blue'],['On leave today',$onLeave,'Approved leave, no check-in','calendar','purple'],['Pending requests',$pendingLeaves,'Leave requests awaiting review','clock','amber']] as [$label,$value,$caption,$icon,$color])
