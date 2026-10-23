@@ -3,7 +3,7 @@
 @section('content')
 <div class="page-heading"><div><div class="eyebrow">YOUR ACCOUNT</div><h1>Account settings</h1><p>Keep your sign-in details secure and up to date.</p></div></div>
 <div class="account-grid">
-<section class="panel"><div class="profile-banner"><span class="avatar">{{ mb_strtoupper(mb_substr($user->name,0,1)) }}</span><div><h2>{{ $user->name }}</h2><p>{{ $user->role==='admin'?'Administrator':'Employee account' }}</p></div></div>
+<section class="panel"><div class="profile-banner"><span class="avatar">{{ mb_strtoupper(mb_substr($user->name,0,1)) }}</span><div><h2>{{ $user->name }}</h2><p>{{ ['superadmin'=>'Super Administrator','admin'=>'Administrator','employee'=>'Employee account'][$user->role] ?? 'Account' }}</p></div></div>
 <div class="panel-body"><div class="schedule-row"><span>Work email</span><strong style="overflow-wrap:anywhere">{{ $user->email }}</strong></div><div class="schedule-row"><span>Access level</span><strong>{{ ucfirst($user->role) }}</strong></div><p class="form-text mt-3">Your administrator manages your name, email and employee profile.</p></div></section>
 <section class="panel"><div class="panel-header"><div><h2>Change password</h2><p>Use a password you do not use anywhere else.</p></div><x-icon name="lock"/></div>
 <div class="panel-body"><form method="post" action="{{ route('account.password') }}">@csrf @method('PUT')
