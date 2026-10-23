@@ -9,6 +9,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\SalaryController;
 
 Route::get('/login',[AuthController::class,'form'])->middleware('guest')->name('login');
 Route::post('/login',[AuthController::class,'login'])->middleware(['guest','throttle:5,1'])->name('login.submit');
@@ -25,6 +26,10 @@ Route::middleware('auth')->group(function(){
         Route::post('/check-out',[AttendanceController::class,'checkOut'])->name('checkout');
         Route::get('/my-attendance',[AttendanceController::class,'mine'])->name('attendance.mine');
         Route::get('/my-profile',fn()=>view('employees.profile',['employee'=>auth()->user()->employee?->load('department')]))->name('profile');
+    });
+    Route::middleware('role:superadmin')->group(function(){
+        Route::get('/salaries',[SalaryController::class,'index'])->name('salaries.index');
+        Route::post('/salaries',[SalaryController::class,'store'])->name('salaries.store');
     });
     Route::middleware('role:admin')->group(function(){
         Route::view('/access','access.index')->name('access.index');

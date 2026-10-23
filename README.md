@@ -117,3 +117,11 @@ Additional limitations:
 The optional `ui-smoke` GitHub Actions job uses Chrome and Playwright to exercise desktop/mobile portals, CSRF rejection, department/employee creation, attendance, leave approval, account activation, CSV download and password change. Screenshots and a results JSON are saved as the `portal-ui-checks` workflow artifact. Node/Playwright are test tools only; running the application requires no Node build.
 
 For a local browser check with Chrome installed: install Playwright into an isolated test-tools directory, set `NODE_PATH` to its node_modules directory, start the seeded demo at http://127.0.0.1:8000, and run `node tests/browser/smoke.cjs`. Use a disposable demo database: the browser scenario intentionally creates and edits synthetic records.
+
+
+## Super Admin and salaries (new)
+
+- Demo Super Admin: `superadmin@example.test` / `DemoSuper123!` (local/testing seeds only).
+- Super Admin inherits admin navigation and can access `/salaries` to set the monthly base salary in PKR for each employee. Ordinary admins and employees cannot access salary records.
+- No tax, payroll disbursement or payslip claims. Salary records are **synthetic** demonstration values.
+- After pulling, run `php artisan migrate --seed` for new role-compatible schema and demo salaries. Existing databases need special care: the original `users.role` enum only accepts admin/employee; see migration note below.

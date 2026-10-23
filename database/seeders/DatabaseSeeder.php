@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
             throw new RuntimeException('Synthetic demo seeding is allowed only in local/testing environments.');
         }
 
+        $super = User::firstOrCreate(['email' => 'superadmin@example.test'], [
+            'name' => 'Demo Super Administrator', 'password' => 'DemoSuper123!', 'role' => 'superadmin',
+        ]);
         $admin = User::firstOrCreate(['email' => 'admin@example.test'], [
             'name' => 'Demo Administrator', 'password' => 'DemoAdmin123!', 'role' => 'admin',
         ]);
@@ -45,6 +48,13 @@ class DatabaseSeeder extends Seeder
             $employees[] = Employee::firstOrCreate(['employee_code' => $code], [
                 'user_id' => $user->id, 'department_id' => $departments[$department]->id,
                 'name' => $name, 'email' => $email, 'active' => true,
+            ]);
+        }
+
+        // Synthetic salary figures, in PKR, for demo screens only.
+        foreach ($employees as $index => $employee) {
+            \App\Models\Salary::firstOrCreate(['employee_id' => $employee->id, 'effective_month' => now('Asia/Karachi')->startOfMonth()->toDateString()], [
+                'amount' => 50000 + $index * 7500, 'note' => 'Synthetic monthly base salary', 'updated_by' => $super->id,
             ]);
         }
 

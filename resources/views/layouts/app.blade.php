@@ -7,13 +7,15 @@
 <title>@yield('title','Overview') · Company Attendance</title>
 <link href="{{ asset('vendor/bootstrap/bootstrap.min.css') }}" rel="stylesheet">
 <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+<link href="{{ asset('css/salary-enhancements.css') }}" rel="stylesheet">
 <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body class="{{ auth()->check()?'workspace':'auth-page' }}">
 <a class="skip-link" href="#main-content">Skip to content</a>
 @if(auth()->check())
 @php
-$isAdmin=auth()->user()->role==='admin';
+$isAdmin=in_array(auth()->user()->role,['admin','superadmin'],true);
+$isSuper=auth()->user()->role==='superadmin';
 $nav=$isAdmin?[
 ['dashboard','Overview','grid'],['employees.*','Team directory','users'],['departments.*','Departments','building'],
 ['attendance.index','Attendance','clock'],['leaves.*','Leave requests','calendar'],['reports.*','Reports','chart'],['access.index','Roles & access','shield']
@@ -25,16 +27,17 @@ $targets=['employees.*'=>'employees.index','departments.*'=>'departments.index',
 <div class="nav-scrim" data-nav-close></div>
 <aside class="sidebar" id="workspace-navigation" aria-label="Workspace navigation">
 <a class="brand" href="{{ route('dashboard') }}"><span class="brand-mark"><x-icon name="leaf" size="24"/></span><span>Attendance<span class="brand-sub">COMPANY WORKSPACE</span></span></a>
-<div class="workspace-label">{{ $isAdmin?'ADMIN WORKSPACE':'EMPLOYEE WORKSPACE' }}</div>
+<div class="workspace-label">{{ $isSuper?'SUPER ADMIN':($isAdmin?'ADMIN WORKSPACE':'EMPLOYEE WORKSPACE') }}</div>
 <nav class="side-nav" aria-label="Main">
 @foreach($nav as [$key,$label,$icon])
 <a href="{{ route($targets[$key]??$key) }}" class="nav-item {{ request()->routeIs($key)?'active':'' }}" @if(request()->routeIs($key)) aria-current="page" @endif><x-icon :name="$icon"/><span>{{ $label }}</span>@if(request()->routeIs($key))<span class="nav-dot"></span>@endif</a>
 @endforeach
+@if($isSuper)<a href="{{ route('salaries.index') }}" class="nav-item {{ request()->routeIs('salaries.*')?'active':'' }}"><x-icon name="chart"/><span>Salary management</span></a>@endif
 </nav>
 <div class="sidebar-bottom">
 <a href="{{ route('account.edit') }}" class="nav-item {{ request()->routeIs('account.*')?'active':'' }}"><x-icon name="lock"/><span>Account settings</span></a>
 <div class="sidebar-help"><x-icon name="shield" size="18"/><div><strong>{{ $isAdmin?'Manage with confidence':'Your work, in one place' }}</strong><p>{{ $isAdmin?'People, attendance and approvals.':'Attendance, leave and your profile.' }}</p></div></div>
-<div class="sidebar-person"><span class="avatar">{{ mb_strtoupper(mb_substr(auth()->user()->name,0,1)) }}</span><div><strong>{{ auth()->user()->name }}</strong><span>{{ $isAdmin?'Administrator':'Employee' }}</span></div></div>
+<div class="sidebar-person"><span class="avatar">{{ mb_strtoupper(mb_substr(auth()->user()->name,0,1)) }}</span><div><strong>{{ auth()->user()->name }}</strong><span>{{ $isSuper?'Super administrator':($isAdmin?'Administrator':'Employee') }}</span></div></div>
 </div>
 </aside>
 <div class="workspace-main">

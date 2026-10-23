@@ -17,7 +17,7 @@ class DashboardController extends Controller
         $day = now('Asia/Karachi')->startOfDay();
         $date = $day->toDateString();
 
-        if ($user->role === 'admin') {
+        if (in_array($user->role, ['admin','superadmin'], true)) {
             $roster = Employee::where('active', true)->with([
                 'attendances' => fn ($query) => $query->whereDate('attendance_date', $date),
                 'leaveRequests' => fn ($query) => $query->approved()->overlapping($date, $date),

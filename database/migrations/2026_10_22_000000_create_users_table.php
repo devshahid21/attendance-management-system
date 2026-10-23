@@ -8,7 +8,7 @@ return new class extends Migration {
         Schema::create('users', function (Blueprint $t) {
             $t->id(); $t->string('name'); $t->string('email')->unique();
             $t->timestamp('email_verified_at')->nullable(); $t->string('password');
-            $t->enum('role', ['admin','employee'])->default('employee');
+            $t->string('role', 20)->default('employee');
             $t->rememberToken(); $t->timestamps();
         });
         Schema::create('password_reset_tokens', function (Blueprint $t) {
