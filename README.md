@@ -3,7 +3,7 @@
 **Developer:** Muhammad Shahid  
 **Project type:** Newly rebuilt **educational demonstration** inspired by an earlier BS Information Technology FYP. **Not** historical FYP source code or a deployed company product.
 
-A small-company server-rendered application with **Laravel 10**, **PHP 8.1 / 8.2**, **MySQL 8+**, **Blade**, and **Bootstrap 5.3.2** (local assets). No React, separate API, payroll, biometrics, GPS, AI or complex shift handling.
+A small-company server-rendered application with **Laravel 10**, **PHP 8.1 / 8.2**, **MySQL 8+**, **Blade**, and **Bootstrap 5.3.2** (local assets). No React, separate API, payroll disbursement, biometrics, GPS, AI or complex shift handling.
 
 ## 2023-era compatibility
 
@@ -15,7 +15,7 @@ The Laravel 10 structure uses HTTP/console kernels, an exception handler, a rout
 
 ## Features
 
-- Admin and employee login/logout, role middleware, server-side validation and CSRF.
+- Super Admin, admin and employee login/logout, role middleware, server-side validation and CSRF.
 - Admin: departments, employee CRUD (deactivation preserves records), individual login creation, day/department/employee filters, attendance corrections with required reasons and history (including creating missing-day records), monthly CSV export.
 - Employee: personal profile, one daily check-in, single check-out, monthly history/summary, and leave requests.
 - Leave management: casual/sick/annual requests; admin approval/rejection with reviewer/date/note; overlap protection; approved leave shown separately in reports/CSV. No paid-leave balances.
@@ -63,7 +63,7 @@ Note: This repository contains source files but does **not** commit vendor/ or c
 
 Run `php artisan migrate --seed` against your local demo database after checking out this branch. For an existing installation, `php artisan migrate` adds the leave table without resetting attendance; `php artisan db:seed` adds synthetic examples. Do not use migrate:fresh on an existing database you want to preserve.
 
-The seeder creates **4 departments, 8 fictional employees and 1 admin**, attendance from the **previous 20 working days**, and **3 leave requests** (approved/pending/rejected). Dates are relative to installation time; no real company information is used. Repeated seeding preserves existing accounts, corrections and records. It is blocked outside local/testing environments.
+The seeder creates **4 departments, 8 fictional employees, 1 admin and 1 Super Admin**, attendance from the **previous 20 working days**, and **3 leave requests** (approved/pending/rejected). Dates are relative to installation time; no real company information is used. Repeated seeding preserves existing accounts, corrections and records. It is blocked outside local/testing environments.
 
 All employee demo accounts use `DemoEmployee123!`: ayesha, bilal, sara, usman, hina, omar, zain and maryam at `example.test`. Admin credentials remain as listed above. Use the previous working day for Ayesha's approved-leave example and today's month/previous month for attendance reports.
 
@@ -124,4 +124,4 @@ For a local browser check with Chrome installed: install Playwright into an isol
 - Demo Super Admin: `superadmin@example.test` / `DemoSuper123!` (local/testing seeds only).
 - Super Admin inherits admin navigation and can access `/salaries` to set the monthly base salary in PKR for each employee. Ordinary admins and employees cannot access salary records.
 - No tax, payroll disbursement or payslip claims. Salary records are **synthetic** demonstration values.
-- After pulling, run `php artisan migrate --seed` for new role-compatible schema and demo salaries. Existing databases need special care: the original `users.role` enum only accepts admin/employee; see migration note below.
+- After pulling, run `php artisan migrate --seed` for new role-compatible schema and demo salaries. Existing databases need special care: the original `users.role` enum only accepts admin/employee; the role-expansion migration updates MySQL enums; fresh installations use a role string column. Back up existing data before migrating.
