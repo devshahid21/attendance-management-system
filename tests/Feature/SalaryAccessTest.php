@@ -27,4 +27,10 @@ class SalaryAccessTest extends TestCase {
   $this->actingAs($super)->post('/salaries',['employee_id'=>$employee->id,'month'=>'2026-10','amount'=>90000])->assertRedirect();
   $this->assertDatabaseCount('salaries',1);
  }
+ public function test_salary_inputs_are_validated_before_writing(): void {
+  $super=User::create(['name'=>'Super','email'=>'validation@example.test','password'=>'secret12345','role'=>'superadmin']);
+  $this->actingAs($super)->get('/salaries?month=invalid')->assertSessionHasErrors('month');
+  $this->post('/salaries',['employee_id'=>99999,'month'=>'2026-13','amount'=>-1])->assertSessionHasErrors(['employee_id','month','amount']);
+  $this->assertDatabaseCount('salaries',0);
+ }
 }
