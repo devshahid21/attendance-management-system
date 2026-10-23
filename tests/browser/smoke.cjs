@@ -22,7 +22,7 @@ async function noOverflow(page) {
   }
 }
 async function capture(page, name, fullPage = false) {
-  const buffer = await page.screenshot({ path: path.join(output, name + '.jpg'), type: 'jpeg', quality: 55, fullPage });
+  const buffer = await page.screenshot({ path: path.join(output, name + '.jpg'), type: 'jpeg', quality: 82, fullPage });
   if (process.env.EMIT_QA_IMAGES === '1') {
     const encoded = buffer.toString('base64');
     const chunks = encoded.match(/.{1,4000}/g) || [];
@@ -69,6 +69,7 @@ async function signIn(context, email, password) {
           const response = await admin.goto(base + route);
           assert.equal(response.status(), 200, route);
           await noOverflow(admin);
+          if (width === 1440) await capture(admin, 'admin-' + route.slice(1), true);
         }
       }
       await admin.getByRole('button', { name: 'Open navigation' }).click();
@@ -191,6 +192,7 @@ async function signIn(context, email, password) {
         const response = await page.goto(base + route);
         assert.equal(response.status(), 200);
         assert.equal(await page.getByText('bilal@example.test', { exact: true }).count(), 0);
+        await capture(page, 'employee-' + route.slice(1), true);
       }
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(base + '/');
@@ -200,6 +202,33 @@ async function signIn(context, email, password) {
       await page.locator('.side-nav').getByRole('link', { name: 'My attendance', exact: true }).click();
       await page.waitForURL(base + '/my-attendance');
       await noOverflow(page);
+      await context.close();
+    });
+    await record('Super Admin inherits team pages and manages private salaries', async () => {
+      const context = await browser.newContext({ viewport: { width: 1440, height: 1100 } });
+      const page = await signIn(context, 'superadmin@example.test', 'DemoSuper123!');
+      await page.getByRole('heading', { name: 'A clear view of your team.' }).waitFor();
+      await capture(page, 'superadmin-dashboard', true);
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({width, height: width === 390 ? 844 : 1100});
+        for (const route of ['/leaves', '/salaries', '/access', '/account']) {
+          const response = await page.goto(base + route);
+          assert.equal(response.status(), 200, 'Super Admin ' + route);
+          await noOverflow(page);
+          if (width === 1440) await capture(page, 'superadmin-' + route.slice(1), true);
+        }
+      }
+      await page.setViewportSize({width:1440,height:1100});
+      await page.goto(base + '/salaries');
+      const row = page.getByRole('row').filter({hasText:'Ayesha Khan'});
+      await row.locator('input[name="amount"]').fill('85500.50');
+      await row.locator('input[name="note"]').fill('Synthetic UI verification update');
+      await row.getByRole('button', {name:'Save', exact:true}).click();
+      await page.waitForLoadState();
+      await page.getByText('Monthly salary saved.', {exact:true}).waitFor();
+      await page.getByRole('row').filter({hasText:'Ayesha Khan'}).getByRole('cell', {name:'85,500.50',exact:true}).waitFor();
+      assert.equal((await adminContext.request.get(base + '/salaries')).status(),403);
+      assert.equal((await employeeContext.request.get(base + '/salaries')).status(),403);
       await context.close();
     });
     assert.deepEqual(failures, [], 'No browser JavaScript errors');
