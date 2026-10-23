@@ -21,7 +21,7 @@ class DemoSeederTest extends TestCase
         Carbon::setTestNow(Carbon::parse('2026-10-22 14:00:00', 'Asia/Karachi'));
         try {
             $this->seed(DatabaseSeeder::class);
-            $this->assertDatabaseCount('users', 9);
+            $this->assertDatabaseCount('users', 10);
             $this->assertDatabaseCount('departments', 4);
             $this->assertDatabaseCount('employees', 8);
             $this->assertDatabaseCount('leave_requests', 3);
